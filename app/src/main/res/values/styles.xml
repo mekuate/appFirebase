@@ -1,0 +1,60 @@
+<resources>
+
+    <!-- Base application theme. -->
+    <style name="MaterialKyalaTheme" parent="android:Theme.Material">
+        <!-- Customize your theme here. -->
+        <item name="colorPrimary">@color/colorPrimary</item>
+        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
+        <item name="colorAccent">@color/colorAccent</item>
+    </style>
+    <style name="TitleTextApparence" parent="TextAppearance.AppCompat.Title">
+        <item name="android:textColor">@color/colorPrimary</item>
+    </style>
+    <style name="seekbartitle" parent="TitleTextApparence">
+        <item name="android:textSize">96sp</item>
+    </style>
+    <style name="FullscreenTheme" parent="MaterialKyalaTheme">
+        <item name="android:windowActionBar">false</item>
+        <item name="android:windowNoTitle">true</item>
+        <item name="android:windowBackground">@null</item>
+    </style>
+
+    <style name="ActivityActionBarStyle" parent="android:Widget.Holo.ActionBar">
+        <item name="android:background">@color/colorPrimary</item>
+        <item name="android:elevation">12dp</item>
+        <item name="android:logo">@android:color/transparent</item>
+    </style>
+    <!-- style for normal activity -->
+    <style name="activity" parent="MaterialKyalaTheme">
+        <item name="android:actionBarStyle">@style/ActivityActionBarStyle</item>
+        <item name="android:windowActionBarOverlay">true</item>
+        <item name="android:windowActionBar">false</item>
+        <item name="android:windowBackground">@null</item>
+        <item name="metaButtonBarStyle">?android:attr/buttonBarStyle</item>
+        <item name="android:fontFamily">casual</item>
+        <item name="metaButtonBarButtonStyle">?android:attr/buttonBarButtonStyle</item>
+    </style>
+
+    <style name="activityToolbarStyle" parent="@style/Theme.AppCompat.Light.NoActionBar">
+        <item name="android:fontFamily">casual</item>
+        <item name="colorPrimary">@color/colorPrimary</item>
+        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
+        <item name="colorAccent">@color/colorAccent</item>
+    </style>
+    <style name="Topeka.CompoundButton" parent="Widget.AppCompat.Button.Borderless">
+        <item name="android:background">@drawable/selector_button</item>
+        <item name="android:button">@null</item>
+    </style>
+
+    <style name="Topeka.CompoundButton.Radio" parent="Topeka.CompoundButton">
+        <item name="android:background">@drawable/selector_checkable</item>
+    </style>
+
+    <style name="Topeka.CompoundButton.True" parent="Topeka.CompoundButton">
+        <item name="android:background">@drawable/selector_true</item>
+    </style>
+
+    <style name="Topeka.CompoundButton.False" parent="Topeka.CompoundButton">
+        <item name="android:background">@drawable/selector_false</item>
+    </style>
+</resources>

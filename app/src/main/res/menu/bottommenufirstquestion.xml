@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context=".ui.ui.Jouer.PartieExercice">
+    <item
+        android:id="@+id/action_lire_cours"
+        android:enabled="true"
+        android:icon="@drawable/news"
+        android:title="Cours"
+        app:showAsAction="ifRoom" />
+    <item
+        android:id="@+id/action_text"
+        android:enabled="true"
+        android:visible="true"
+        android:icon="@drawable/cours"
+        android:title="Text"
+        app:showAsAction="ifRoom" />
+    <item
+        android:id="@+id/action_calco"
+        android:enabled="true"
+        android:visible="true"
+        android:icon="@drawable/calculator"
+        android:title="Calco"
+        app:showAsAction="ifRoom" />
+    <item
+        android:id="@+id/action_front"
+        android:enabled="true"
+        android:icon="@drawable/back"
+        android:title="Continuer"
+        app:showAsAction="ifRoom" />
+
+    />
+</menu>

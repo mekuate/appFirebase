@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context=".JeuDemarrer"
+    >
+    <item
+        android:id="@+id/action_self"
+        android:icon="@drawable/trending"
+        android:title="@string/action_self_stat"
+        android:visible="true"
+        app:showAsAction="ifRoom"/>
+
+    <!-- Settings, should always be in the overflow -->
+    <item android:id="@+id/action_global"
+        android:title="@string/action_global_stat"
+        android:icon="@drawable/ic_local_bar_black_24dp"
+        android:visible="true"
+        app:showAsAction="ifRoom"
+        />
+
+</menu>

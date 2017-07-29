@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="colorPrimary">#68409c</color>
+    <color name="colorPrimaryDark">#422c78</color>
+    <color name="couleurBleue">#2d55ce</color>
+    <color name="couleurBleue_light">#5279ed</color>
+    <color name="colorBack">#000000</color>
+    <color name="colorRed">#dc1111</color>
+    <color name="colorRed_light">#e76262</color>
+    <color name="colorAccent">#550077</color>
+    <color name="colorWhite">#FFFFFF</color>
+    <color name="colorMagento">#8DA508</color>
+    <color name="colorOrange">#f48916</color>
+    <color name="colorOrange_light">#fdaf5c</color>
+    <color name="colorViolet">#492676</color>
+    <color name="colorViolet_light">#7647a9</color>
+    <color name="colorYellow">#cfb117</color>
+    <color name="colorYellow_light">#f4df73</color>
+    <color name="black_overlay">#66070606</color>
+    <color name="colorRose">#e42d9b</color>
+    <color name="colorRose_light">#de64ad</color>
+    <color name="colorVertCitron">#25660b</color>
+    <color name="colorVert_light">#5d8f49</color>
+</resources>
