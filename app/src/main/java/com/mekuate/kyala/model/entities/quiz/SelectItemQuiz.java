@@ -10,15 +10,8 @@ import android.os.Parcel;
 @SuppressLint("ParcelCreator")
 public final class SelectItemQuiz extends OptionsQuiz<String> {
 
-    public SelectItemQuiz(String question, int[] answer, String[] options, boolean solved) {
+    public SelectItemQuiz(String question, String [] answer, String[] options, boolean solved) {
         super(question, answer, options, solved);
-    }
-
-    @SuppressWarnings("unused")
-    public SelectItemQuiz(Parcel in) {
-        super(in);
-        String[] options = in.createStringArray();
-        setOptions(options);
     }
 
     @Override

@@ -9,19 +9,15 @@
     <string name="title_activity_test">activityTest</string>
     <string name="title_activity_main2">Main2Activity</string>
     <string name="epreuve0">Compose une épreuve en appuyant sur le button ci-dessous</string>
-    <string name="competition0">Participe à un challenge en appuyant le bouton ci-desous</string>
+    <string name="competition0">Que le meilleur Gagne la mise !</string>
     <string name="inscription">Je n\'ai pas Facebook, Je crée mon compte perso</string>
-    <string name="premierTrimestre">Premier Trimestre</string>
     <string name="quiz_of_quizzes"> Sur </string>
     <string name="transition_toolbar">ToolbarTransition</string>
     <string name="transition_avatar">AvatarTransition</string>
     <string name="back">retourner</string>
-    <string name="deuxiemeTrimestre">Deuxieme Trimestre</string>
-    <string name="troisiemeTrimestre">Troisième Trimestre</string>
-    <string name="Examen">Examen National</string>
-    <string name="suivant">Suivant</string>
+    <string name="matiere">Matière</string>
     <string name="tab_en_classe">En classe</string>
-    <string name="tab_competition">Challenge</string>
+    <string name="tab_competition">Défi</string>
     <string name="tab_concours">Concours</string>
     <string name="connexion">J\'ai déjà un compte, je me connecte </string>
     <string name="classehint">Choisi ta classe</string>
@@ -32,29 +28,9 @@
     <string name="fb_login">Je Continue avec mon compte Facebook</string>
     <string name="action_self_stat">Voir tes progrès</string>
     <string name="action_global_stat">Voir les statistiques globales</string>
-    <string name="niveau">Niveau</string>
-    <string name="matiere">Matiere</string>
-    <string name="francais">Français</string>
-    <string name="anglais">Anglais</string>
-    <string name="maths">Maths</string>
-    <string name="chimie">Chimie</string>
-    <string name="physique">Physique</string>
-    <string name="techno">Technologie</string>
-    <string name="histoire">Histoire</string>
-    <string name="geographie">Géographie</string>
-    <string name="phylo">Phylosophie</string>
-    <string name="science">SVT</string>
     <string name="btn_true">Vrai</string>
     <string name="btn_false">Faux</string>
-    <string-array name="classe_liste">
-        <item>Selectionne ta classe</item>
-        <item>Terminale C</item>
-        <item>Terminale D</item>
-        <item>Terminale A</item>
-    </string-array>
     <string name="title_activity_inscription1">Inscription1</string>
     <string name="title_activity_connexion">Connexion</string>
 
-    <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
 </resources>

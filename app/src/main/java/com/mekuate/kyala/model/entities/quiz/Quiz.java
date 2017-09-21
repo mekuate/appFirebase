@@ -6,14 +6,15 @@ import android.util.Log;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
+
 /**
  * Created by Mekuate on 02/07/2017.
  * cette classe abstraite cree une structure generale des classes quiz
  */
 
-public abstract class Quiz<A> implements Parcelable {
-
+public abstract class Quiz<A>  implements Parcelable {
     private static final String TAG = "Quiz";
+
     public static final Creator<Quiz> CREATOR = new Creator<Quiz>() {
         @SuppressWarnings("TryWithIdenticalCatches")
         @Override
@@ -91,7 +92,7 @@ public abstract class Quiz<A> implements Parcelable {
     }
 
     public boolean isAnswerCorrect(A answer) {
-        return answer.equals(answer);
+        return this.answer.equals(answer);
     }
 
     public boolean isSolved() {
@@ -163,3 +164,5 @@ public abstract class Quiz<A> implements Parcelable {
         return getType() + ": \"" + getQuestion() + "\"";
     }
 }
+
+

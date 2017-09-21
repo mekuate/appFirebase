@@ -51,7 +51,8 @@ public class SelectionMatiere extends AppCompatActivity {
         GridLayoutManager glm = new GridLayoutManager(this, 2);
         recyclerView.setLayoutManager(glm);
         //les matieres de la classe de l'utilisateur
-        final DatabaseReference roofref = FirebaseDatabase.getInstance().getReference();
+        final DatabaseReference roofref = FirebaseDatabase.getInstance().getReference("matiere");
+        roofref.keepSynced(true);
         final DatabaseReference ref = FirebaseDatabase.getInstance().getReference("classe").child(user.getClasse()).child("matiere");
         final FirebaseRecyclerAdapter<Boolean, MatiereViewHolder> adapter1 = new FirebaseRecyclerAdapter<Boolean, MatiereViewHolder>(
                 Boolean.class,
@@ -62,7 +63,8 @@ public class SelectionMatiere extends AppCompatActivity {
             @Override
             protected void populateViewHolder(final MatiereViewHolder viewHolder, Boolean model, final int position) {
                 String matiereKey = getRef(position).getKey();
-                roofref.child("matiere").child(matiereKey).addValueEventListener(new ValueEventListener() {
+
+                roofref.child(matiereKey).addValueEventListener(new ValueEventListener() {
                     @Override
                     public void onDataChange(DataSnapshot dataSnapshot) {
                         final Matiere matiere = dataSnapshot.getValue(Matiere.class);

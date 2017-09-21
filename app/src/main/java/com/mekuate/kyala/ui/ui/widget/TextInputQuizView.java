@@ -12,7 +12,8 @@ import android.widget.EditText;
 import android.widget.TextView;
 
 import com.mekuate.kyala.R;
-import com.mekuate.kyala.model.entities.Matiere;
+import com.mekuate.kyala.model.entities.Epreuve;
+import com.mekuate.kyala.model.entities.Quize;
 import com.mekuate.kyala.model.entities.quiz.Quiz;
 
 /**
@@ -23,8 +24,8 @@ import com.mekuate.kyala.model.entities.quiz.Quiz;
 public abstract class TextInputQuizView<Q extends Quiz> extends AbsQuizView<Q>
         implements TextWatcher, TextView.OnEditorActionListener {
 
-    public TextInputQuizView(Context context, Matiere matiere, Q quiz) {
-        super(context, matiere, quiz);
+    public TextInputQuizView(Context context, Epreuve epreuve, Q quiz, Quize quize) {
+        super(context, epreuve, quiz, quize);
     }
 
     protected final EditText createEditText() {

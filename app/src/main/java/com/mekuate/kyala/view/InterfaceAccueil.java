@@ -19,7 +19,7 @@ import com.mekuate.kyala.R;
 import com.mekuate.kyala.model.Persistence.PlainData;
 import com.mekuate.kyala.model.entities.User;
 import com.mekuate.kyala.ui.ui.Jouer.JeuDemarrer;
-import com.mekuate.kyala.ui.ui.login.CLogin;
+import com.mekuate.kyala.ui.ui.login.Login;
 
 /**
  * An example full-screen activity that shows and hides the system UI (i.e.
@@ -29,7 +29,7 @@ public class InterfaceAccueil extends Activity {
     private View mContentView;
     public User mUser;
     public FirebaseAuth mAuth;
-public PlainData data ;
+    public PlainData data ;
     FirebaseUser firebaseUser ;
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -37,9 +37,6 @@ public PlainData data ;
         setupWindowAnimations();
         setContentView(R.layout.activity_interface_accueil);
         // Initialize Firebase Auth
-        data = new PlainData();
-       // data.initializeNiveau();
-
         mAuth = FirebaseAuth.getInstance();
         firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
         mContentView = findViewById(R.id.fullscreen_content);
@@ -67,7 +64,7 @@ public PlainData data ;
 
     public boolean checkLoggedIn(){
         Intent i;
-       if((FirebaseAuth.getInstance().getCurrentUser())!=null){
+       if(firebaseUser !=null){
            return true;
        }else
         return false;
@@ -80,32 +77,24 @@ public PlainData data ;
     }
     //TODO - VERIFIER SI USER EST CONNECTER ET OUVIR LE FORM CORRESPOND
     private void  startComponent(){
-
         Intent mainIntent;
-
         if(checkLoggedIn()) {
-            DatabaseReference ref= FirebaseDatabase.getInstance().getReference("users");
-            ref.keepSynced(true);
-            ref.child(firebaseUser.getUid()).addListenerForSingleValueEvent(new ValueEventListener() {
+            DatabaseReference reference = FirebaseDatabase.getInstance().getReference("users");
+            reference.child(firebaseUser.getUid()).addListenerForSingleValueEvent(new ValueEventListener() {
                 @Override
                 public void onDataChange(DataSnapshot dataSnapshot) {
-                    if(dataSnapshot.exists()){
-                        //gerer le cas ou l'utilisateur est enregistre dans firebase avec sa classe
+                    if (dataSnapshot.exists()){
                         mUser = dataSnapshot.getValue(User.class);
-                        Intent intent = new Intent(InterfaceAccueil.this, JeuDemarrer.class);
-                        intent.putExtra("User", (Parcelable) mUser);
-                        startActivity(intent);
+                        Intent mainIntent = new Intent(InterfaceAccueil.this, JeuDemarrer.class);
+                        mainIntent.putExtra("User", (Parcelable) mUser);
+                        startActivity(mainIntent);
 
+                    } else {
+                        Intent mainIntent = new Intent(InterfaceAccueil.this, Login.class);
+                        startActivity(mainIntent);
+                    }
 
-
-                    }else{
-                        startActivity(new Intent(InterfaceAccueil.this, CLogin.class));
-                        // do nothing
-                        //Toast.makeText(InterfaceAccueil.this,"Pas cette utilisateur dans BD Firebase", Toast.LENGTH_LONG).show();
                 }
-
-
-            }
 
                 @Override
                 public void onCancelled(DatabaseError databaseError) {
@@ -113,8 +102,9 @@ public PlainData data ;
                 }
             });
 
+
         } else {
-            mainIntent = new Intent(InterfaceAccueil.this, CLogin.class);
+            mainIntent = new Intent(InterfaceAccueil.this, Login.class);
             startActivity(mainIntent);
         }
     }

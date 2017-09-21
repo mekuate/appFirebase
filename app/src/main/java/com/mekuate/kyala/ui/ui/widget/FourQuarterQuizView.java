@@ -10,7 +10,8 @@ import android.widget.GridView;
 
 import com.mekuate.kyala.R;
 import com.mekuate.kyala.model.adapter.OptionsQuizAdapter;
-import com.mekuate.kyala.model.entities.Matiere;
+import com.mekuate.kyala.model.entities.Epreuve;
+import com.mekuate.kyala.model.entities.Quize;
 import com.mekuate.kyala.model.entities.quiz.FourQuarterQuiz;
 import com.mekuate.kyala.utils.ApiLevelHelper;
 
@@ -22,11 +23,12 @@ import com.mekuate.kyala.utils.ApiLevelHelper;
 public class FourQuarterQuizView extends AbsQuizView<FourQuarterQuiz> {
 
     private static final String KEY_ANSWER = "ANSWER";
-    private int mAnswered = -1;
+    private String mAnsweredString = null;
+    private Integer mAnswered=-1;
     private GridView mAnswerView;
 
-    public FourQuarterQuizView(Context context, Matiere matiere, FourQuarterQuiz quiz) {
-        super(context, matiere, quiz);
+    public FourQuarterQuizView(Context context, Epreuve epreuve, FourQuarterQuiz quiz, Quize quize) {
+        super(context, epreuve, quiz, quize);
     }
 
     @Override
@@ -35,12 +37,13 @@ public class FourQuarterQuizView extends AbsQuizView<FourQuarterQuiz> {
         mAnswerView.setSelector(R.drawable.selector_button);
         mAnswerView.setNumColumns(2);
         mAnswerView.setAdapter(new OptionsQuizAdapter(getQuiz().getOptions(),
-                R.layout.item_answer));
+                R.layout.item_answer_start));
         mAnswerView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 allowAnswer();
-                mAnswered = position;
+                mAnsweredString= parent.getItemAtPosition(position).toString();
+                mAnswered=position;
             }
         });
         return mAnswerView;
@@ -60,6 +63,7 @@ public class FourQuarterQuizView extends AbsQuizView<FourQuarterQuiz> {
             return;
         }
         mAnswered = savedInput.getInt(KEY_ANSWER);
+        mAnsweredString = savedInput.getString(KEY_ANSWER);
         if (mAnswered != -1) {
             if (ApiLevelHelper.isAtLeast(Build.VERSION_CODES.KITKAT) && isLaidOut()) {
                 setUpUserInput();
@@ -87,6 +91,6 @@ public class FourQuarterQuizView extends AbsQuizView<FourQuarterQuiz> {
 
     @Override
     protected boolean isAnswerCorrect() {
-        return getQuiz().isAnswerCorrect(new int[]{mAnswered});
+        return getQuiz().isAnswerCorrect(new String[]{mAnsweredString});
     }
 }

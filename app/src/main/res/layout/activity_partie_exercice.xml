@@ -5,77 +5,120 @@
     android:id="@+id/quiz_container"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/colorYellow_light"
     android:orientation="vertical">
+
+    <android.support.design.widget.FloatingActionButton
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:visibility="gone"
+        app:fabSize="normal"
+        app:elevation="11dp"
+        android:layout_marginTop="30dp"
+        android:layout_marginEnd="@dimen/spacing_double"
+        android:layout_marginRight="@dimen/spacing_double"
+        android:layout_gravity="top|end"
+        android:transitionName="@string/transition_avatar"
+        android:id="@+id/button_finish_epreuve"/>
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="?android:windowBackground"
+        android:background="@color/colorYellow_light"
         android:orientation="vertical">
-
         <!-- Fake a toolbar for easier animations -->
         <FrameLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="?colorPrimary">
-            <TextView android:id="@+id/category_title"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:paddingStart="@dimen/spacing_huge"
-                android:paddingLeft="@dimen/spacing_huge"
-                android:paddingTop="@dimen/spacing_micro"
-                android:paddingBottom="@dimen/spacing_micro"
-                android:minHeight="?actionBarSize"
-                android:background="?colorPrimary"
-                android:gravity="center_vertical"
-                android:transitionName="@string/transition_toolbar"
-                tools:ignore="UnusedAttribute,NewApi,RtlSymmetry,PrivateResource" />
+            android:background="@color/colorYellow_light">
             <ImageButton android:id="@+id/back"
                 android:layout_height="wrap_content"
                 android:layout_width="wrap_content"
                 android:padding="@dimen/spacing_double"
-                android:contentDescription="@string/back"
+                android:background="@color/colorYellow_light"
                 android:src="@drawable/ic_arrow_back"
-                android:tint="?android:textColorPrimary"
-                android:layout_gravity="start|center_vertical" />
+                android:layout_gravity="start|center_horizontal" />
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/title_partie"
+                android:textAlignment="center"
+                android:layout_marginLeft="@dimen/activity_vertical_margin"
+                android:textColor="@color/colorWhite"
+                android:gravity="center"
+                android:layout_gravity="center"
+                android:textSize="@dimen/BigTitle"/>
+
         </FrameLayout>
 
-        <FrameLayout android:layout_width="match_parent"
+
+        <FrameLayout
+            android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_gravity="center">
-
-            <!-- Alpha and scales are being used during entry animation -->
-            <ImageView android:id="@+id/icon"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                tools:ignore="PrivateResource"
-                android:layout_gravity="center"
-                android:layout_margin="@dimen/spacing_double"
-                android:contentDescription="@null"
-                android:padding="@dimen/spacing_double"
-                android:scaleType="centerInside"
-                android:alpha="0"
-                android:scaleX="0.7"
-                android:scaleY="0.7"/>
-
-            <FrameLayout android:id="@+id/quiz_fragment_container"
+            android:gravity="center"
+            android:background="@color/colorWhite">
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
+                android:orientation="vertical">
+            <ImageView android:id="@+id/icon"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
                 android:layout_gravity="center"
-                android:visibility="invisible"/>
-        </FrameLayout>
-    </LinearLayout>
+                android:scaleType="centerInside"
+                android:background="@color/colorYellow_light"
+                android:paddingBottom="20dp"
+                android:src="@drawable/en_classe" />
+                <!-- Scale is being used during entry animation -->
+                <TextView android:id="@+id/category_title"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:transitionName="@string/transition_toolbar"
+                    tools:ignore="UnusedAttribute,NewApi,RtlSymmetry,PrivateResource" />
+                <TextView android:id="@+id/matiere_title"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:paddingBottom="@dimen/spacing_micro"
+                    android:transitionName="@string/transition_toolbar"
+                    tools:ignore="UnusedAttribute,NewApi,RtlSymmetry,PrivateResource" />
+                <TextView android:id="@+id/niveau_title"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:paddingTop="@dimen/spacing_micro"
+                    android:transitionName="@string/transition_toolbar"
+                    tools:ignore="UnusedAttribute,NewApi,RtlSymmetry,PrivateResource" />
+                    <Button style="@style/Widget.AppCompat.Button.Colored"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:id="@+id/miser_btn"
+                        android:text="Je veux miser"
+                        android:layout_marginTop="@dimen/spacing_double"
+                        android:elevation="11dp"
+                        />
+            </LinearLayout>
 
-    <!-- Scale is being used during entry animation -->
+            <FrameLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:id="@+id/quiz_fragment_container"
+                android:visibility="invisible" />
+                <!-- Alpha and scales are being used during entry animation -->
+
+        </FrameLayout>
+
+
+    </LinearLayout>
     <android.support.design.widget.FloatingActionButton
         android:id="@+id/fab_quiz"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         app:fabSize="normal"
-        android:layout_gravity="bottom|end"
-        android:layout_marginBottom="@dimen/spacing_double"
+        android:layout_gravity="center|end"
         android:layout_marginEnd="@dimen/spacing_double"
         android:layout_marginRight="@dimen/spacing_double"
+        android:layout_marginBottom="@dimen/spacing_double"
         android:transitionName="@string/transition_avatar"
-        tools:ignore="UnusedAttribute" />
+        app:elevation="11dp" />
+
+
 </merge>

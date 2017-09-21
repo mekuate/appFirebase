@@ -11,8 +11,4 @@
     android:paddingTop="@dimen/activity_vertical_margin"
     tools:context="com.mekuate.kyala.ui.ui.Jouer.JeuDemarrer">
 
-
-
-
-
 </RelativeLayout>

@@ -40,7 +40,10 @@ public class User implements Parcelable{
         email = in.readString();
         telephone = in.readString();
         id = in.readString();
+
     }
+
+
 
     public static final Creator<User> CREATOR = new Creator<User>() {
         @Override

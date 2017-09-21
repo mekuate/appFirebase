@@ -2,9 +2,11 @@ package com.mekuate.kyala.model.entities;
 
 import android.os.Parcel;
 import android.os.Parcelable;
+import android.util.Log;
 
-import com.mekuate.kyala.model.entities.quiz.Quiz;
+import com.google.firebase.database.Exclude;
 
+import java.util.HashMap;
 import java.util.List;
 
 /**
@@ -14,17 +16,25 @@ import java.util.List;
 public class Epreuve implements Parcelable {
     private String id;
     private String nom;
-    private int duree;
+    private Long duree;
     private String niveau;
     private String matiere;
     private String classe;
-    private List <Quiz> quiz;
+    private HashMap <String, Boolean> quiz;
+
 
     private boolean solved;
+    @Exclude
     private  int[] score;
+    @Exclude
+    protected List<Quize> quizzes;
+    @Exclude
+    private static final int NO_SCORE = 0;
+
     public Epreuve(){};
 
-    public Epreuve(String id, String nom, int duree, String niveau, String matiere, String classe, List<Quiz> quiz) {
+
+    public Epreuve(String id, String nom, Long duree, String niveau, String matiere, String classe, HashMap <String, Boolean> quiz, boolean solved) {
         this.id = id;
         this.nom = nom;
         this.duree = duree;
@@ -32,54 +42,21 @@ public class Epreuve implements Parcelable {
         this.matiere = matiere;
         this.classe = classe;
         this.quiz = quiz;
-        this.score = new int[this.quiz.size()];
+        this.solved = solved;
+
     }
 
-    public Epreuve(String niveau, String id, String nom, int duree, String matiere, int[] score, String classe,List<Quiz> quiz) {
-        this.niveau = niveau;
-        this.id = id;
-        this.nom = nom;
-        this.duree = duree;
-        this.matiere = matiere;
-        this.score = score;
-        this.classe = classe;
-        if (quiz.size() == score.length) {
-            this.quiz = quiz;
-            this.score = score;
-        } else {
-            throw new IllegalArgumentException("Quizzes and scores must have the same length");
-        }
-    }
 
 
     protected Epreuve(Parcel in) {
         id = in.readString();
         nom = in.readString();
-        duree = in.readInt();
+        duree = in.readLong();
         niveau = in.readString();
         matiere = in.readString();
         classe = in.readString();
-        quiz = in.createTypedArrayList(Quiz.CREATOR);
         solved = in.readByte() != 0;
         score = in.createIntArray();
-    }
-
-    @Override
-    public void writeToParcel(Parcel dest, int flags) {
-        dest.writeString(id);
-        dest.writeString(nom);
-        dest.writeInt(duree);
-        dest.writeString(niveau);
-        dest.writeString(matiere);
-        dest.writeString(classe);
-        dest.writeTypedList(quiz);
-        dest.writeByte((byte) (solved ? 1 : 0));
-        dest.writeIntArray(score);
-    }
-
-    @Override
-    public int describeContents() {
-        return 0;
     }
 
     public static final Creator<Epreuve> CREATOR = new Creator<Epreuve>() {
@@ -94,6 +71,25 @@ public class Epreuve implements Parcelable {
         }
     };
 
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+
+        dest.writeString(id);
+        dest.writeString(nom);
+        dest.writeLong(duree);
+        dest.writeString(niveau);
+        dest.writeString(matiere);
+        dest.writeString(classe);
+        dest.writeByte((byte) (solved ? 1 : 0));
+        dest.writeIntArray(score);
+    }
+
+
     public String getId() {
         return id;
     }
@@ -102,20 +98,26 @@ public class Epreuve implements Parcelable {
         this.id = id;
     }
 
-    public int getDuree() {
-        return duree;
+    public String getNom() {
+        return nom;
     }
 
-    public void setDuree(int duree) {
-        this.duree = duree;
+    @Exclude
+    public List<Quize> getQuizzes() {
+        return quizzes;
+    }
+    @Exclude
+    public void setQuizzes(List<Quize> quizes) {
+        this.quizzes = quizes;
+        if(this.quizzes != null){
+            this.score = new int[this.quizzes.size()];
+        }else
+            this.score = null;
+
     }
 
-    public List<Quiz> getQuiz() {
-        return quiz;
-    }
-
-    public void setQuiz(List<Quiz> quiz) {
-        this.quiz = quiz;
+    public void setNom(String nom) {
+        this.nom = nom;
     }
 
     public String getNiveau() {
@@ -126,6 +128,14 @@ public class Epreuve implements Parcelable {
         this.niveau = niveau;
     }
 
+    public Long getDuree() {
+        return duree;
+    }
+
+    public void setDuree(Long duree) {
+        this.duree = duree;
+    }
+
     public String getMatiere() {
         return matiere;
     }
@@ -134,6 +144,7 @@ public class Epreuve implements Parcelable {
         this.matiere = matiere;
     }
 
+
     public String getClasse() {
         return classe;
     }
@@ -141,22 +152,69 @@ public class Epreuve implements Parcelable {
     public void setClasse(String classe) {
         this.classe = classe;
     }
-    public boolean isSolved(){
+
+    public boolean isSolved() {
         return solved;
     }
-    public void setSolved(boolean solved){ this.solved =solved;}
 
-
-
-    public int getFirstUnsolvedQuizPosition() {
-        if (quiz == null) {
-            return -1;
-        }
-        for (int i = 0; i < quiz.size(); i++) {
-            if (!quiz.get(i).isSolved()) {
-                return i;
-            }
-        }
-        return quiz.size();
+    public void setSolved(boolean solved) {
+        this.solved = solved;
     }
+
+
+
+    public void setScore(int[] score) {
+        this.score = score;
+    }
+
+    /**
+     * Updates a score for a provided quiz within this category.
+     *
+     * @param quize The quiz to rate.
+     * @param correctlySolved <code>true</code> if the quiz was solved else <code>false</code>.
+     */
+    public void setScore(Quize quize, boolean correctlySolved) {
+        int index = quizzes.indexOf(quize);
+        Log.d("Score Quiz", "Setting score for " + quize + " with index " + index);
+        if (-1 == index) {
+            return;
+        }
+        score[index] = correctlySolved ? quize.getNote() : NO_SCORE;
+    }
+
+    public boolean isSolvedCorrectly(Quize quize) {
+        return getScore(quize) == quize.getNote();
+    }
+
+    /**
+     * Gets the score for a single quiz.
+     *
+     * @param quize The quiz to look for
+     * @return The score if found, else 0.
+     */
+    public int getScore(Quize quize) {
+        try {
+            return score[quizzes.indexOf(quize)];
+        } catch (IndexOutOfBoundsException ioobe) {
+            return 0;
+        }
+    }
+
+    /**
+     * @return The sum of all quiz scores within this epreuve.
+     */
+    public int getScore() {
+        int epreuveScore = 0;
+        for (int quizScore : score) {
+            epreuveScore += quizScore;
+        }
+        return epreuveScore;
+    }
+
+    public int[] getScores() {
+        return score;
+    }
+
+
+
 }

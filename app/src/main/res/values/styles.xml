@@ -46,15 +46,25 @@
         <item name="android:button">@null</item>
     </style>
 
+
     <style name="Topeka.CompoundButton.Radio" parent="Topeka.CompoundButton">
         <item name="android:background">@drawable/selector_checkable</item>
     </style>
-
+    <style name="AppTheme.Button" parent="Widget.AppCompat.Button.Colored">
+    <item name="android:textColor">@color/colorBack</item>
+    <item name="colorButtonNormal">@color/colorWhite</item>
+</style>
     <style name="Topeka.CompoundButton.True" parent="Topeka.CompoundButton">
         <item name="android:background">@drawable/selector_true</item>
     </style>
-
+    <style name="Topeka.TextAppearance.ListItem" parent="TextAppearance.AppCompat.Subhead" />
     <style name="Topeka.CompoundButton.False" parent="Topeka.CompoundButton">
         <item name="android:background">@drawable/selector_false</item>
+    </style>
+    <style name="Topeka.TextAppearance.Title" parent="TextAppearance.AppCompat.Title">
+        <item name="android:textColor">@color/colorPrimary</item>
+    </style>
+    <style name="Topeka.TextAppearance.Title.Picker" parent="Topeka.TextAppearance.Title">
+        <item name="android:textSize">50dp</item>
     </style>
 </resources>

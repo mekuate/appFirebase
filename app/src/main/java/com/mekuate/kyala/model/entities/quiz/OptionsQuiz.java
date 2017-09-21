@@ -8,20 +8,15 @@ import java.util.Arrays;
  * Created by Mekuate on 02/07/2017.
  */
 
-public abstract class OptionsQuiz<T> extends Quiz<int[]> {
+public abstract class OptionsQuiz<T> extends Quiz<String[]> {
 
     private T[] mOptions;
 
-    public OptionsQuiz(String question, int[] answer, T[] options, boolean solved) {
+    public OptionsQuiz(String question, String[] answer, T[] options, boolean solved) {
         super(question, answer, solved);
         mOptions = options;
     }
 
-    public OptionsQuiz(Parcel in) {
-        super(in);
-        final int answer[] = in.createIntArray();
-        setAnswer(answer);
-    }
 
     public T[] getOptions() {
         return mOptions;
@@ -32,7 +27,8 @@ public abstract class OptionsQuiz<T> extends Quiz<int[]> {
     }
 
     @Override
-    public boolean isAnswerCorrect(int[] answer) {
+    public boolean isAnswerCorrect(String[] answer) {
+
         return Arrays.equals(getAnswer(), answer);
     }
 
@@ -44,10 +40,10 @@ public abstract class OptionsQuiz<T> extends Quiz<int[]> {
     @Override
     public void writeToParcel(Parcel dest, int flags) {
         super.writeToParcel(dest, flags);
-        dest.writeIntArray(getAnswer());
     }
 
     @SuppressWarnings("RedundantIfStatement")
+
     @Override
     public boolean equals(Object o) {
         if (this == o) {
@@ -59,7 +55,7 @@ public abstract class OptionsQuiz<T> extends Quiz<int[]> {
 
         OptionsQuiz that = (OptionsQuiz) o;
 
-        if (!Arrays.equals(getAnswer(), ((int[]) that.getAnswer()))) {
+        if (!Arrays.equals(getAnswer(), ((String[]) that.getAnswer()))) {
             return false;
         }
         if (!Arrays.equals(mOptions, that.mOptions)) {

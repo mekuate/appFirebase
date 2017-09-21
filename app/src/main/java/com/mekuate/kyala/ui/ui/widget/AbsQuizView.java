@@ -1,18 +1,51 @@
 package com.mekuate.kyala.ui.ui.widget;
 
+import android.animation.ArgbEvaluator;
+import android.animation.ObjectAnimator;
+import android.annotation.SuppressLint;
 import android.content.Context;
+import android.content.res.ColorStateList;
+import android.graphics.Color;
+import android.graphics.drawable.PictureDrawable;
+import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
+import android.support.annotation.ColorInt;
+import android.support.v4.content.ContextCompat;
+import android.support.v4.view.MarginLayoutParamsCompat;
+import android.support.v4.view.animation.LinearOutSlowInInterpolator;
+import android.text.SpannableString;
+import android.text.Spanned;
+import android.text.TextPaint;
+import android.text.method.LinkMovementMethod;
+import android.text.style.ClickableSpan;
+import android.util.Property;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.Interpolator;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.FrameLayout;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.ScrollView;
 import android.widget.TextView;
 
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.RequestBuilder;
 import com.mekuate.kyala.R;
-import com.mekuate.kyala.model.entities.Matiere;
+import com.mekuate.kyala.model.entities.Epreuve;
+import com.mekuate.kyala.model.entities.Quize;
 import com.mekuate.kyala.model.entities.quiz.Quiz;
+import com.mekuate.kyala.ui.ui.Jouer.PartieExercice;
+import com.mekuate.kyala.ui.ui.widget.Fab.CheckableFab;
+import com.mekuate.kyala.utils.ApiLevelHelper;
+import com.mekuate.kyala.utils.SvgSoftwareLayerSetter;
+import com.mekuate.kyala.utils.ViewUtils;
+
+import static com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions.withCrossFade;
 
 /**
  * Created by Mekuate on 05/07/2017.
@@ -23,36 +56,52 @@ public abstract class AbsQuizView<Q extends Quiz> extends FrameLayout  {
 
     private static final int ANSWER_HIDE_DELAY = 500;
     private static final int FOREGROUND_COLOR_CHANGE_DELAY = 750;
-    private final int mSpacingDouble=0;
+    private final int mSpacingDouble;
     private final LayoutInflater mLayoutInflater;
-    private  Matiere matiere;
+    private Epreuve epreuve;
     private final Q mQuiz;
-    //private final Interpolator mLinearOutSlowInInterpolator;
-    private final Handler mHandler = null;
-   // private final InputMethodManager mInputMethodManager;
+    private  Quize quize;
+    private final Interpolator mLinearOutSlowInInterpolator;
+    private final Handler mHandler;
+    private final InputMethodManager mInputMethodManager;
     private boolean mAnswered;
     private TextView mQuestionView;
-   // private CheckableFab mSubmitAnswer;
+    private TextView question;
+    private  TextView enonce;
+    private ImageView image_enonce;
+    private TextView link_enonce;
+    private CheckableFab mSubmitAnswer;
     private Runnable mHideFabRunnable;
     private Runnable mMoveOffScreenRunnable;
-
+    private ScrollView vue_enonce;
+    private LinearLayout frame_enonce;
+    SpannableString ss;
+    private RequestBuilder<PictureDrawable> requestBuilder;
     /**
      * creation des vues pour les quiz.
-     *
      * @param context The context for this view.
-     * @param matiere The {@link Matiere} this view is running in.
+     * @param epreuve The {@link Epreuve} this view is running in.
      * @param quiz The actual {@link Quiz} that is going to be displayed.
      *
      */
-    public AbsQuizView(Context context, Matiere matiere, Q quiz) {
+    public AbsQuizView(Context context, Epreuve epreuve, Q quiz, Quize quizemodel) {
         super(context);
         mQuiz = quiz;
-        matiere = matiere;
+        this.quize = quizemodel;
+        this.epreuve = epreuve;
         mLayoutInflater = LayoutInflater.from(context);
+        mSpacingDouble = getResources().getDimensionPixelSize(R.dimen.spacing_triple);
+        mLinearOutSlowInInterpolator = new LinearOutSlowInInterpolator();
+        mHandler = new Handler();
+        mInputMethodManager = (InputMethodManager) context.getSystemService
+                (Context.INPUT_METHOD_SERVICE);
+
         setId(quiz.getId());
         setUpQuestionView();
+        mSubmitAnswer = getSubmitButton();
         LinearLayout container = createContainerLayout(context);
         View quizContentView = getInitializedContentView();
+
         addContentView(container, quizContentView);
         addOnLayoutChangeListener(new OnLayoutChangeListener() {
             @Override
@@ -60,8 +109,8 @@ public abstract class AbsQuizView<Q extends Quiz> extends FrameLayout  {
                                        int oldLeft,
                                        int oldTop, int oldRight, int oldBottom) {
                 removeOnLayoutChangeListener(this);
-                //Todo Change the bottom nav bar here accordingly
-                // changeBottomNavBar();
+                addFloatingActionButton();
+
             }
         });
     }
@@ -71,14 +120,70 @@ public abstract class AbsQuizView<Q extends Quiz> extends FrameLayout  {
      */
     private void setUpQuestionView() {
         mQuestionView = (TextView) mLayoutInflater.inflate(R.layout.question, this, false);
-        mQuestionView.setText(getQuiz().getQuestion());
+       question = (TextView) mQuestionView.findViewById(R.id.question_view);
+        question.setText(getQuiz().getQuestion());
+        setLinkEnonceQuestion();
+    }
+
+
+    private void setLinkEnonceQuestion(){
+        vue_enonce = (ScrollView) mLayoutInflater.inflate(R.layout.enonce, this,false);
+        enonce = (TextView) vue_enonce.findViewById(R.id.text_enonce);
+        frame_enonce = (LinearLayout) vue_enonce.findViewById(R.id.frame_enonce);
+        image_enonce = (ImageView) vue_enonce.findViewById(R.id.image_enonce);
+        link_enonce =(TextView) vue_enonce.findViewById(R.id.link_enonce);
+        enonce.setText(quize.getEnonce());
+        //gerer l'image avec glide and androidSVG
+        setImage_enonce();
+        ss = new SpannableString("L'énoncé");
+        // display vue enonce when there is a data to play with
+        if(quize.getEnonce() ==null && quize.getImage() == null){
+            vue_enonce.setVisibility(GONE);
+
+        }else {
+            vue_enonce.setVisibility(VISIBLE);
+            ClickableSpan clickableSpan = new ClickableSpan() {
+                @Override
+                public void onClick(View textView) {
+                    if(frame_enonce.isShown()){
+                        frame_enonce.setVisibility(GONE);
+
+                    }else{
+                        frame_enonce.setVisibility(VISIBLE);
+
+                    }
+                }
+                @Override
+                public void updateDrawState(TextPaint ds) {
+                    super.updateDrawState(ds);
+                    ds.setUnderlineText(true);
+                }
+            };
+            ss.setSpan(clickableSpan,0, ss.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+            link_enonce.setText(ss);
+            link_enonce.setMovementMethod(LinkMovementMethod.getInstance());
+            link_enonce.setHighlightColor(Color.BLUE);
+
+        }
+
+    }
+
+    public void setImage_enonce() {
+        image_enonce = (ImageView) vue_enonce.findViewById(R.id.image_enonce);
+        Uri uri = Uri.parse("https://de.wikipedia.org/wiki/Scalable_Vector_Graphics#/media/File:SVG_logo.svg");
+        requestBuilder = Glide.with(this)
+                .as(PictureDrawable.class)
+                .transition(withCrossFade())
+                .listener(new SvgSoftwareLayerSetter());
+
+        requestBuilder.load(uri).into(image_enonce);
     }
 
     private LinearLayout createContainerLayout(Context context) {
-        LinearLayout container = new LinearLayout(context);
-        container.setId(R.id.absQuizViewContainer);
-        container.setOrientation(LinearLayout.VERTICAL);
-        return container;
+        LinearLayout linearLayout = new LinearLayout(context);
+        linearLayout.setId(R.id.absQuizViewContainer);
+        linearLayout.setOrientation(LinearLayout.VERTICAL);
+        return linearLayout;
     }
 
     private View getInitializedContentView() {
@@ -96,12 +201,13 @@ public abstract class AbsQuizView<Q extends Quiz> extends FrameLayout  {
     private void addContentView(LinearLayout container, View quizContentView) {
         LayoutParams layoutParams = new LayoutParams(LayoutParams.MATCH_PARENT,
                 LayoutParams.WRAP_CONTENT);
+        container.addView(vue_enonce,layoutParams);
         container.addView(mQuestionView, layoutParams);
         container.addView(quizContentView, layoutParams);
         addView(container, layoutParams);
     }
 
-   /** private void addFloatingActionButton() {
+   private void addFloatingActionButton() {
         final int fabSize = getResources().getDimensionPixelSize(R.dimen.size_fab);
         int bottomOfQuestionView = findViewById(R.id.question_view).getBottom();
         final LayoutParams fabLayoutParams = new LayoutParams(fabSize, fabSize,
@@ -136,7 +242,7 @@ public abstract class AbsQuizView<Q extends Quiz> extends FrameLayout  {
             });
         }
         return mSubmitAnswer;
-    } */
+    }
 
     private void setDefaultPadding(View view) {
         view.setPadding(mSpacingDouble, mSpacingDouble, mSpacingDouble, mSpacingDouble);
@@ -190,18 +296,18 @@ public abstract class AbsQuizView<Q extends Quiz> extends FrameLayout  {
      * @param answered <code>true</code> if an answer was selected, else <code>false</code>.
      */
     protected void allowAnswer(final boolean answered) {
-       /** if (null != mSubmitAnswer) {
+        if (null != mSubmitAnswer) {
             if (answered) {
                 mSubmitAnswer.show();
             } else {
                 mSubmitAnswer.hide();
             }
             mAnswered = answered;
-        }*/
+        }
     }
 
     /**
-     * Sets the quiz to answered if it not already has been answered.
+     * Sets the quiz to answered if it is not already has been answered.
      * Otherwise does nothing.
      */
     protected void allowAnswer() {
@@ -221,7 +327,9 @@ public abstract class AbsQuizView<Q extends Quiz> extends FrameLayout  {
     private void submitAnswer(final View v) {
         final boolean answerCorrect = isAnswerCorrect();
         mQuiz.setSolved(true);
-        //performScoreAnimation(answerCorrect);
+        quize.setSolved(true);
+
+        performScoreAnimation(answerCorrect);
     }
 
     /**
@@ -229,17 +337,18 @@ public abstract class AbsQuizView<Q extends Quiz> extends FrameLayout  {
      *
      * @param answerCorrect <code>true</code> if the answer was correct, else <code>false</code>.
      */
-  /**  private void performScoreAnimation(final boolean answerCorrect) {
-        ((QuizActivity) getContext()).lockIdlingResource();
+
+    private void performScoreAnimation(final boolean answerCorrect) {
+        //((PartieExercice) getContext()).lockIdlingResource();
         // Decide which background color to use.
         final int backgroundColor = ContextCompat.getColor(getContext(),
-                answerCorrect ? R.color.green : R.color.red);
+                answerCorrect ? R.color.colorVert_light : R.color.colorRed);
         adjustFab(answerCorrect, backgroundColor);
-        resizeView();
+       // resizeView();
         moveViewOffScreen(answerCorrect);
         // Animate the foreground color to match the background color.
         // This overlays all content within the current view.
-        animateForegroundColor(backgroundColor);
+        //animateForegroundColor(backgroundColor);
     }
 
     @SuppressLint("NewApi")
@@ -296,16 +405,17 @@ public abstract class AbsQuizView<Q extends Quiz> extends FrameLayout  {
         mMoveOffScreenRunnable = new Runnable() {
             @Override
             public void run() {
-                mCategory.setScore(getQuiz(), answerCorrect);
-                if (getContext() instanceof QuizActivity) {
-                    ((QuizActivity) getContext()).proceed();
+
+                epreuve.setScore(quize, answerCorrect);
+                if (getContext() instanceof PartieExercice) {
+                    ((PartieExercice) getContext()).proceed();
                 }
             }
         };
         mHandler.postDelayed(mMoveOffScreenRunnable,
                 FOREGROUND_COLOR_CHANGE_DELAY * 2);
     }
-    }**/
+
     private void setMinHeightInternal(View view) {
         view.setMinimumHeight(getResources().getDimensionPixelSize(R.dimen.min_height_question));
 

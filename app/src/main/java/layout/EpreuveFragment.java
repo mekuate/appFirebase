@@ -83,7 +83,8 @@ public class EpreuveFragment extends Fragment {
         RecyclerView recyclerView = (RecyclerView) sheetView.findViewById(R.id.recyclerViewNiveau);
         GridLayoutManager llm = new GridLayoutManager(getActivity(), 2);
         recyclerView.setLayoutManager(llm);
-        final DatabaseReference roofref= FirebaseDatabase.getInstance().getReference();
+        final DatabaseReference roofref= FirebaseDatabase.getInstance().getReference("niveau");
+        roofref.keepSynced(true);
         DatabaseReference ref = FirebaseDatabase.getInstance().getReference("classe").child(user.getClasse()).child("niveau");
         FirebaseRecyclerAdapter<Boolean, NiveauViewHolder> adapter = new FirebaseRecyclerAdapter<Boolean, NiveauViewHolder>(
                 Boolean.class,
@@ -95,7 +96,7 @@ public class EpreuveFragment extends Fragment {
             protected void populateViewHolder(final NiveauViewHolder viewHolder, final Boolean model, final int position) {
                 //GET key OF NIVEAU FIRST
                 String niveauKey = getRef(position).getKey();
-                roofref.child("niveau").child(niveauKey).addValueEventListener(new ValueEventListener() {
+                roofref.child(niveauKey).addValueEventListener(new ValueEventListener() {
                     @Override
                     public void onDataChange(DataSnapshot dataSnapshot) {
                         final Niveau niveau = dataSnapshot.getValue(Niveau.class);

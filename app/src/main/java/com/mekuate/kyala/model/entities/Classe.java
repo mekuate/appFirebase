@@ -13,7 +13,7 @@ public class Classe  implements Parcelable {
     private String id;
     private String nom;
    private HashMap<String,Boolean> niveau;
-    private HashMap <String,Boolean> matiere;
+    private HashMap <String,HashMap<String, String>> matiere;
 
     public Classe() {
     }
@@ -56,21 +56,8 @@ public class Classe  implements Parcelable {
         this.nom = nom;
     }
 
-    public HashMap<String, Boolean> getMatiere() {
-        return matiere;
-    }
 
-    public void setMatiere(HashMap<String, Boolean> matiere) {
-        this.matiere = matiere;
-    }
 
-    public HashMap<String, Boolean> getNiveau() {
-        return niveau;
-    }
-
-    public void setNiveau(HashMap<String, Boolean> niveau) {
-        this.niveau = niveau;
-    }
 
     @Override
     public int describeContents() {

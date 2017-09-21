@@ -12,6 +12,7 @@ import android.widget.TableLayout;
 import android.widget.TextView;
 
 import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -26,6 +27,7 @@ import com.squareup.picasso.Callback;
 import com.squareup.picasso.NetworkPolicy;
 import com.squareup.picasso.Picasso;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import de.hdodenhof.circleimageview.CircleImageView;
@@ -46,7 +48,8 @@ public class JeuDemarrer extends AppCompatActivity {
     private ActivityHelper activityHelper = new ActivityHelper();
     private TableLayout tableLayout;
     private FloatingActionButton btnEpreuve;
-    private List <Classe> classeList;
+    FirebaseUser firebaseUser;
+    private List <Classe> classeList = new ArrayList<Classe>();
 
 
 
@@ -94,16 +97,17 @@ public class JeuDemarrer extends AppCompatActivity {
     }
 
     public void setClasseUser() {
-        DatabaseReference ref1 = FirebaseDatabase.getInstance().getReference("classe");
+        classeUserTextView = (TextView) findViewById(R.id.classe);
+        DatabaseReference ref1 = FirebaseDatabase.getInstance().getReference().child("classe");
 
-      // Query query = ref1.orderByKey().equalTo(mUser.getClasse());
-        ref1.addValueEventListener(new ValueEventListener() {
+     // Query query = ref1.orderByKey().equalTo(mUser.getClasse());
+        ref1.child(mUser.getClasse()).addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-                for (DataSnapshot ds:dataSnapshot.getChildren()) {
-                    final Classe classe1 =  ds.getValue(Classe.class);
-                    classeList.add(classe1);
-                }
+               if(dataSnapshot.exists()){
+                   classe = dataSnapshot.getValue(Classe.class);
+                   classeUserTextView.setText(classe.getNom());
+               }
 
 
 
@@ -115,8 +119,7 @@ public class JeuDemarrer extends AppCompatActivity {
 
             }
         });
-        classeUserTextView = (TextView) findViewById(R.id.classe);
-        //classeUserTextView.setText(classe.getNom());
+
 
 
     }

@@ -9,7 +9,8 @@ import android.widget.SeekBar;
 import android.widget.TextView;
 
 import com.mekuate.kyala.R;
-import com.mekuate.kyala.model.entities.Matiere;
+import com.mekuate.kyala.model.entities.Epreuve;
+import com.mekuate.kyala.model.entities.Quize;
 import com.mekuate.kyala.model.entities.quiz.AlphaPickerQuiz;
 
 import java.util.Arrays;
@@ -29,8 +30,8 @@ public class AlphaPickerQuizView extends AbsQuizView<AlphaPickerQuiz> {
     private SeekBar mSeekBar;
     private List<String> mAlphabet;
 
-    public AlphaPickerQuizView(Context context, Matiere matiere, AlphaPickerQuiz quiz) {
-        super(context, matiere, quiz);
+    public AlphaPickerQuizView(Context context, Epreuve epreuve, AlphaPickerQuiz quiz, Quize quize) {
+        super(context, epreuve, quiz, quize);
     }
 
     @Override

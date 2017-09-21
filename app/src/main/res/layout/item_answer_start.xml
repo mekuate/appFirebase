@@ -8,5 +8,6 @@
     android:gravity="start|center_vertical"
     android:minHeight="@dimen/min_height_touch_target"
     android:paddingStart="@dimen/spacing_normal"
+    android:textAppearance="@style/Topeka.TextAppearance.ListItem"
     android:paddingEnd="@dimen/spacing_normal"
     tools:ignore="NewApi" />

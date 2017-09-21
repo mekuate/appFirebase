@@ -7,12 +7,16 @@ import android.util.SparseBooleanArray;
 import android.view.View;
 import android.widget.AbsListView;
 import android.widget.AdapterView;
+import android.widget.ListAdapter;
 import android.widget.ListView;
 
 import com.mekuate.kyala.model.adapter.OptionsQuizAdapter;
-import com.mekuate.kyala.model.entities.Matiere;
+import com.mekuate.kyala.model.entities.Epreuve;
+import com.mekuate.kyala.model.entities.Quize;
 import com.mekuate.kyala.model.entities.quiz.AnswerHelper;
 import com.mekuate.kyala.model.entities.quiz.MultiSelectQuiz;
+
+import java.util.HashMap;
 
 /**
  * Created by Mekuate on 11/07/2017.
@@ -24,9 +28,13 @@ public class MultiSelectQuizView extends AbsQuizView<MultiSelectQuiz> {
     private static final String KEY_ANSWER = "ANSWER";
 
     private ListView mListView;
+    private String[] mAnswer;
+    private Quize quize;
 
-    public MultiSelectQuizView(Context context, Matiere matiere, MultiSelectQuiz quiz) {
-        super(context, matiere, quiz);
+    public MultiSelectQuizView(Context context, Epreuve epreuve, MultiSelectQuiz quiz, Quize quize) {
+        super(context, epreuve, quiz, quize);
+        this.quize=quize;
+        mAnswer= new String[quize.getOptions().size()];
     }
 
     @Override
@@ -41,6 +49,8 @@ public class MultiSelectQuizView extends AbsQuizView<MultiSelectQuiz> {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 allowAnswer();
+                mAnswer[position] = parent.getItemAtPosition(position).toString();
+
             }
         });
         return mListView;
@@ -48,16 +58,21 @@ public class MultiSelectQuizView extends AbsQuizView<MultiSelectQuiz> {
 
     @Override
     protected boolean isAnswerCorrect() {
-        final SparseBooleanArray checkedItemPositions = mListView.getCheckedItemPositions();
-        final int[] answer = getQuiz().getAnswer();
-        return AnswerHelper.isAnswerCorrect(checkedItemPositions, answer);
+        final String[] answer = getQuiz().getAnswer();
+        HashMap<String,String> options = quize.getOptions();
+        String[] bestAnswer = new String[answer.length];
+        for(int i=0; i< answer.length; i++){
+             bestAnswer[i] = options.get(answer[i]).toString();
+
+        }
+
+        return AnswerHelper.isAnswerCorrect(mAnswer,bestAnswer);
     }
 
     @Override
     public Bundle getUserInput() {
         Bundle bundle = new Bundle();
-        boolean[] bundleableAnswer = getBundleableAnswer();
-        bundle.putBooleanArray(KEY_ANSWER, bundleableAnswer);
+        bundle.putStringArray(KEY_ANSWER, mAnswer);
         return bundle;
     }
 
@@ -66,12 +81,13 @@ public class MultiSelectQuizView extends AbsQuizView<MultiSelectQuiz> {
         if (savedInput == null) {
             return;
         }
-        final boolean[] answers = savedInput.getBooleanArray(KEY_ANSWER);
+        final String[] answers = savedInput.getStringArray(KEY_ANSWER);
         if (null == answers) {
             return;
         }
-        for (int i = 0; i < answers.length; i++) {
-            mListView.setItemChecked(i, answers[i]);
+        final ListAdapter adapter = mListView.getAdapter();
+        for (int i = 0; i < getQuiz().getOptions().length; i++) {
+            mListView.performItemClick(mListView.getChildAt(i), i, adapter.getItemId(i));
         }
     }
 

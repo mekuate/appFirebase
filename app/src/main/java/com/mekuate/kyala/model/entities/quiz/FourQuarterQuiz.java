@@ -1,38 +1,20 @@
 package com.mekuate.kyala.model.entities.quiz;
 
-import android.os.Parcel;
-import android.os.Parcelable;
-
 import java.util.Arrays;
 
 /**
  * Created by Mekuate on 02/07/2017.
  */
 
-public final class FourQuarterQuiz extends OptionsQuiz<String> {
+public final class FourQuarterQuiz extends OptionsQuiz<String>  {
 
-    public static final Parcelable.Creator<FourQuarterQuiz> CREATOR
-            = new Parcelable.Creator<FourQuarterQuiz>() {
-        @Override
-        public FourQuarterQuiz createFromParcel(Parcel in) {
-            return new FourQuarterQuiz(in);
-        }
 
-        @Override
-        public FourQuarterQuiz[] newArray(int size) {
-            return new FourQuarterQuiz[size];
-        }
-    };
 
-    public FourQuarterQuiz(String question, int[] answer, String[] options, boolean solved) {
+    public FourQuarterQuiz(String question, String [] answer, String[] options, boolean solved) {
         super(question, answer, options, solved);
     }
 
-    public FourQuarterQuiz(Parcel in) {
-        super(in);
-        String options[] = in.createStringArray();
-        setOptions(options);
-    }
+
 
     @Override
     public QuizType getType() {
@@ -44,17 +26,7 @@ public final class FourQuarterQuiz extends OptionsQuiz<String> {
         return AnswerHelper.getAnswer(getAnswer(), getOptions());
     }
 
-    @Override
-    public int describeContents() {
-        return 0;
-    }
 
-    @Override
-    public void writeToParcel(Parcel dest, int flags) {
-        super.writeToParcel(dest, flags);
-        String[] options = getOptions();
-        dest.writeStringArray(options);
-    }
 
     @Override
     public boolean equals(Object o) {
@@ -66,7 +38,7 @@ public final class FourQuarterQuiz extends OptionsQuiz<String> {
         }
 
         FourQuarterQuiz quiz = (FourQuarterQuiz) o;
-        final int[] answer = getAnswer();
+        final String[] answer = getAnswer();
         final String question = getQuestion();
         if (answer != null ? !Arrays.equals(answer, quiz.getAnswer()) : quiz.getAnswer() != null) {
             return false;

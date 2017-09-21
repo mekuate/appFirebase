@@ -10,21 +10,15 @@ import android.os.Parcel;
 @SuppressLint("ParcelCreator")
 public final class FillBlankQuiz extends Quiz<String> {
 
-    private final String mStart;
-    private final String mEnd;
 
-    public FillBlankQuiz(String question, String answer, String start, String end, boolean solved) {
+    public FillBlankQuiz(String question, String answer, boolean solved) {
         super(question, answer, solved);
-        mStart = start;
-        mEnd = end;
     }
 
     @SuppressWarnings("unused")
     public FillBlankQuiz(Parcel in) {
         super(in);
         setAnswer(in.readString());
-        mStart = in.readString();
-        mEnd = in.readString();
     }
 
     @Override
@@ -32,13 +26,6 @@ public final class FillBlankQuiz extends Quiz<String> {
         return getAnswer();
     }
 
-    public String getStart() {
-        return mStart;
-    }
-
-    public String getEnd() {
-        return mEnd;
-    }
 
     @Override
     public QuizType getType() {
@@ -54,7 +41,6 @@ public final class FillBlankQuiz extends Quiz<String> {
     public void writeToParcel(Parcel dest, int flags) {
         super.writeToParcel(dest, flags);
         dest.writeString(getAnswer());
-        dest.writeString(mStart);
-        dest.writeString(mEnd);
+
     }
 }

@@ -1,7 +1,8 @@
 package com.mekuate.kyala.model.entities.quiz;
 
 import android.util.Log;
-import android.util.SparseBooleanArray;
+
+import java.util.HashMap;
 
 /**
  * Created by Mekuate on 02/07/2017.
@@ -22,7 +23,7 @@ public class AnswerHelper {
      * @param answers The answers to display.
      * @return The readable answer.
      */
-    public static String getAnswer(String[] answers) {
+    public static String getStringAnswer(String[] answers) {
         StringBuilder readableAnswer = new StringBuilder();
         //Iterate over all answers
         for (int i = 0; i < answers.length; i++) {
@@ -43,33 +44,53 @@ public class AnswerHelper {
      * @param options The options to display.
      * @return The readable answer.
      */
-    public static String getAnswer(int[] answers, String[] options) {
+    public static String getAnswer(String[] answers, String[] options) {
         String[] readableAnswers = new String[answers.length];
         for (int i = 0; i < answers.length; i++) {
-            final String humanReadableAnswer = options[answers[i]];
-            readableAnswers[i] = humanReadableAnswer;
+            for (int j = 0; j < options.length; j++) {
+                if (options[j].equals(answers[i])){
+                    final String humanReadableAnswer = answers[i];
+                    readableAnswers[i] = humanReadableAnswer;
+                }
+            }
         }
-        return getAnswer(readableAnswers);
+        return getStringAnswer(readableAnswers);
     }
+
+
 
     /**
      * Checks whether a provided answer is correct.
      *
-     * @param checkedItems The items that were selected.
-     * @param answerIds The actual correct answer ids.
+
      * @return <code>true</code> if correct else <code>false</code>.
      */
-    public static boolean isAnswerCorrect(SparseBooleanArray checkedItems, int[] answerIds) {
+    public static boolean isAnswerCorrect(String[] checkedItems, String[] answerIds) {
         if (null == checkedItems || null == answerIds) {
             Log.i(TAG, "isAnswerCorrect got a null parameter input.");
             return false;
         }
-        for (int answer : answerIds) {
-            if (0 > checkedItems.indexOfKey(answer)) {
-                return false;
+
+        int nombre =0;
+
+        for(int i=0; i <answerIds.length;i++){
+            for(int j=0; j <checkedItems.length; j++)
+            if (answerIds[i].equals(checkedItems[j])) {
+               nombre++;
             }
         }
-        return checkedItems.size() == answerIds.length;
+       return nombre == answerIds.length;
     }
 
+
+    public static String getAnswer(HashMap<String, Boolean> answer, HashMap<String, String> options) {
+        String[] readableAnswers = new String[answer.size()];
+        int i=0;
+        for (String keyAnswer: answer.keySet()) {
+            final String humanReadableAnswer = options.get(keyAnswer);
+            readableAnswers[i] = humanReadableAnswer;
+            i++;
+        }
+        return getStringAnswer(readableAnswers);
+    }
 }

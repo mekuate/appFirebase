@@ -2,7 +2,6 @@ package com.mekuate.kyala.ui.ui.Jouer;
 
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
-import android.animation.AnimatorSet;
 import android.animation.ObjectAnimator;
 import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
@@ -12,6 +11,7 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.view.ViewCompat;
 import android.support.v4.view.ViewPropertyAnimatorListenerAdapter;
 import android.support.v4.view.animation.FastOutLinearInInterpolator;
@@ -21,10 +21,16 @@ import android.util.Log;
 import android.view.View;
 import android.view.ViewAnimationUtils;
 import android.view.animation.Interpolator;
+import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 import com.mekuate.kyala.R;
 import com.mekuate.kyala.model.Persistence.FirebaseHelper;
 import com.mekuate.kyala.model.entities.Classe;
@@ -40,9 +46,7 @@ import java.util.List;
 public class PartieExercice extends AppCompatActivity {
     private static final String STATE_IS_PLAYING = "isPlaying";
     private static final String FRAGMENT_TAG = "Quiz";
-
     private Interpolator mInterpolator;
-
     private FragmentQuiz mQuizFragment;
     private FloatingActionButton mQuizFab;
     private boolean mSavedStateIsPlaying;
@@ -54,7 +58,14 @@ public class PartieExercice extends AppCompatActivity {
     private Classe mClasse;
     private Matiere mMatiere;
     private Niveau niveau;
+    private String niveauId, matiereId, classeId;
     private FirebaseHelper firebaseHelper;
+    private Button btnmiser;
+    private User mUser;
+    boolean result = false;
+    TextView title=null;
+    FloatingActionButton finishButton;
+
 
     private final View.OnClickListener mOnClickListener = new View.OnClickListener() {
         @Override
@@ -93,7 +104,7 @@ public class PartieExercice extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         populate();
 
-       int categoryNameTextSize = getResources()
+      int categoryNameTextSize = getResources()
                 .getDimensionPixelSize(R.dimen.category_item_text_size);
         int paddingStart = getResources().getDimensionPixelSize(R.dimen.spacing_double);
         final int startDelay = getResources().getInteger(R.integer.toolbar_transition_duration);
@@ -129,8 +140,8 @@ public class PartieExercice extends AppCompatActivity {
 
     }
 
-    @Override
-    protected void onResume() {
+
+  /* protected void onResume() {
         if (mSavedStateIsPlaying) {
             mQuizFragment = (FragmentQuiz) getSupportFragmentManager().findFragmentByTag(
                     FRAGMENT_TAG);
@@ -141,10 +152,12 @@ public class PartieExercice extends AppCompatActivity {
             mQuizFab.hide();
             mIcon.setVisibility(View.GONE);
         } else {
+           // populate();
             initQuizFragment();
         }
+
         super.onResume();
-    }
+    }*/
 
     @Override
     public void onSaveInstanceState(@NonNull Bundle outState) {
@@ -196,20 +209,38 @@ public class PartieExercice extends AppCompatActivity {
     }
 
     private void startQuizFromClickOn(final View clickedView) {
-        initQuizFragment();
-        getSupportFragmentManager()
-                .beginTransaction()
-                .replace(R.id.quiz_fragment_container, mQuizFragment, FRAGMENT_TAG)
-                .commit();
-        final FrameLayout container = (FrameLayout) findViewById(R.id.quiz_fragment_container);
-       // container.setBackgroundColor(ContextCompat.
-         //       getColor(this, mCategory.getTheme().getWindowBackgroundColor()));
-        revealFragmentContainer(clickedView, container);
-        // the toolbar should not have more elevation than the content while playing
-        setToolbarElevation(false);
+
+       initQuizFragment();
+           getSupportFragmentManager()
+                   .beginTransaction()
+                   .replace(R.id.quiz_fragment_container, mQuizFragment, FRAGMENT_TAG)
+                   .commit();
+           final FrameLayout container = (FrameLayout) findViewById(R.id.quiz_fragment_container);
+           container.setBackgroundColor(ContextCompat.getColor(this,R.color.colorWhite));
+           // container.setBackgroundColor(ContextCompat.
+           //     getColor(this, mCategory.getTheme().getWindowBackgroundColor()));
+          revealFragmentContainer(clickedView, container);
+           // the toolbar should not have more elevation than the content while playing
+           setToolbarElevation(false);
+        //customise a dialog box
+        /*new MaterialDialog.Builder(this)
+                .title("Aucune épreuve disponible pour votre sélection")
+                .content("Nous n'avons pas encore composé d'épreuve pour votre selection. Merci de revenir plus tard o alors essayez une autre selection")
+                .positiveText("Ok")
+                .onPositive(new MaterialDialog.SingleButtonCallback() {
+                    @Override
+                    public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
+                        onBackPressed();
+                    }
+                })
+                .show();
+                */
+        // Toast.makeText(PartieExercice.this,"Plus d'épreuve pour cette sélection", Toast.LENGTH_LONG).show();
+
+
     }
 
-    private void revealFragmentContainer(final View clickedView,
+     private void revealFragmentContainer(final View clickedView,
                                          final FrameLayout fragmentContainer) {
         if (ApiLevelHelper.isAtLeast(Build.VERSION_CODES.LOLLIPOP)) {
             revealFragmentContainerLollipop(clickedView, fragmentContainer);
@@ -217,10 +248,12 @@ public class PartieExercice extends AppCompatActivity {
             fragmentContainer.setVisibility(View.VISIBLE);
             clickedView.setVisibility(View.GONE);
             mIcon.setVisibility(View.GONE);
+            btnmiser.setVisibility(View.GONE);
+
         }
     }
 
-    @TargetApi(Build.VERSION_CODES.LOLLIPOP)
+  @TargetApi(Build.VERSION_CODES.LOLLIPOP)
     private void revealFragmentContainerLollipop(final View clickedView,
                                                  final FrameLayout fragmentContainer) {
         prepareCircularReveal(clickedView, fragmentContainer);
@@ -240,9 +273,9 @@ public class PartieExercice extends AppCompatActivity {
                 .start();
 
         fragmentContainer.setVisibility(View.VISIBLE);
-        AnimatorSet animatorSet = new AnimatorSet();
-        animatorSet.play(mCircularReveal).with(mColorChange);
-        animatorSet.start();
+      //  AnimatorSet animatorSet = new AnimatorSet();
+       //animatorSet.play(mCircularReveal).with(mColorChange);
+      // animatorSet.start();
     }
 
     @TargetApi(Build.VERSION_CODES.LOLLIPOP)
@@ -280,25 +313,28 @@ public class PartieExercice extends AppCompatActivity {
     }
 
     private void initQuizFragment() {
-        if (mQuizFragment != null) {
+       if (mQuizFragment != null) {
             return;
         }
-        mQuizFragment = FragmentQuiz.newInstance(mClasse.getId(), mMatiere.getId(),niveau.getId(), getSolvedStateListener());
-        // the toolbar should not have more elevation than the content while playing
-        setToolbarElevation(false);
+        // verifier s'il y'a une epreuve disponible à corriger
+                    mQuizFragment = FragmentQuiz.newInstance(mUser, mClasse.getId(), mMatiere.getId(),niveau.getId(), getSolvedStateListener());
+                    // the toolbar should not have more elevation than the content while playing
+                    setToolbarElevation(false);
+                    result = true;
+
     }
 
     @NonNull
     private FragmentQuiz.SolvedStateListener getSolvedStateListener() {
         return new FragmentQuiz.SolvedStateListener() {
             @Override
-            public void onCategorySolved() {
+            public void onEpreuveSolved() {
                 setResultSolved();
                 setToolbarElevation(true);
                 displayDoneFab();
             }
 
-            private void displayDoneFab() {
+            public void displayDoneFab() {
                 /* We're re-using the already existing fab and give it some
                  * new values. This has to run delayed due to the queued animation
                  * to hide the fab initially.
@@ -316,7 +352,7 @@ public class PartieExercice extends AppCompatActivity {
                 }
             }
 
-            private void showQuizFabWithDoneIcon() {
+            public void showQuizFabWithDoneIcon() {
                 mQuizFab.setImageResource(R.drawable.ic_tick);
                 mQuizFab.setId(R.id.quiz_done);
                 mQuizFab.setVisibility(View.VISIBLE);
@@ -333,15 +369,21 @@ public class PartieExercice extends AppCompatActivity {
     }
 
     private void setResultSolved() {
-        Intent categoryIntent = new Intent();
-        categoryIntent.putExtra(JsonAttributes.ID, mMatiere.getId());
-        setResult(R.id.solved, categoryIntent);
+        Intent epreuveIntent = new Intent();
+        epreuveIntent.putExtra(JsonAttributes.ID, mMatiere.getId());
+        epreuveIntent.putExtra("matiereKey", mMatiere.getId());
+        epreuveIntent.putExtra("niveauKey", niveau.getId());
+        epreuveIntent.putExtra("User", mUser);
+        setResult(R.id.solved, epreuveIntent);
+
+
     }
 
     /**
      * Proceeds the quiz to it's next state.
      */
     public void proceed() {
+
         submitAnswer();
     }
 
@@ -352,11 +394,17 @@ public class PartieExercice extends AppCompatActivity {
         //mCountingIdlingResource.increment();
     }
 
+
+
     private void submitAnswer() {
         //mCountingIdlingResource.decrement();
         if (!mQuizFragment.showNextPage()) {
             //// TODO: 25/07/2017 montrer le corrige de l'epreuve
-            //mQuizFragment.showSumary();
+            mQuizFragment.showSummary();
+            finishButton.setVisibility(View.VISIBLE);
+            title.setText("Correction");
+            this.title.setTextColor(R.color.colorWhite);
+            title.setPadding(0,40,0,40);
             setResultSolved();
             return;
         }
@@ -367,18 +415,18 @@ public class PartieExercice extends AppCompatActivity {
     private void populate() {
         Intent intent = getIntent();
         intent.setExtrasClassLoader(User.class.getClassLoader());
-        User user = intent.getParcelableExtra("User");
-       String niveauId =  intent.getStringExtra("niveauKey");
-        String matiereId = intent.getStringExtra("matiereKey");
-        String classeId = user.getClasse();
+         mUser = intent.getParcelableExtra("User");
+        niveauId =  intent.getStringExtra("niveauKey");
+         matiereId = intent.getStringExtra("matiereKey");
+
+         classeId = mUser.getClasse();
+
 
         if (null == classeId || matiereId ==null    || niveauId == null) {
             Log.w("jeu partie epreuve", "Didn't find a category. Finishing");
             finish();
         }
-        mClasse = firebaseHelper.getClasseWith(classeId);
-        mMatiere = firebaseHelper.getMatiere(matiereId);
-        niveau = firebaseHelper.getNiveauWith(niveauId);
+
 
         //setTheme(mCategory.getTheme().getStyleId());
         /*if (ApiLevelHelper.isAtLeast(Build.VERSION_CODES.LOLLIPOP)) {
@@ -393,8 +441,10 @@ public class PartieExercice extends AppCompatActivity {
     private void initLayout() {
         setContentView(R.layout.activity_partie_exercice);
         //noinspection PrivateResource
-       /* mIcon = (ImageView) findViewById(R.id.icon);
-        int resId = getResources().getIdentifier(IMAGE_CATEGORY + categoryId, DRAWABLE,
+       mIcon = (ImageView) findViewById(R.id.icon);
+        btnmiser = (Button) findViewById(R.id.miser_btn);
+
+       /* int resId = getResources().getIdentifier(IMAGE_CATEGORY + categoryId, DRAWABLE,
                 getApplicationContext().getPackageName());
         mIcon.setImageResource(resId);
         mIcon.setImageResource(resId);
@@ -407,6 +457,7 @@ public class PartieExercice extends AppCompatActivity {
                 .start();*/
         mQuizFab = (FloatingActionButton) findViewById(R.id.fab_quiz);
         mQuizFab.setImageResource(R.drawable.ic_play);
+        //mQuizFab.setBackgroundColor(getResources().getColor(R.color.colorWhite, null));
         if (mSavedStateIsPlaying) {
             mQuizFab.hide();
         } else {
@@ -418,10 +469,56 @@ public class PartieExercice extends AppCompatActivity {
     private void initToolbar() {
         mToolbarBack = findViewById(R.id.back);
         mToolbarBack.setOnClickListener(mOnClickListener);
-        TextView titleView = (TextView) findViewById(R.id.category_title);
-       // titleView.setText( " - " + mMatiere.getNom() + " - " + niveau.getNom());
-      //  titleView.setTextColor(ContextCompat.getColor(this,
-            //    category.getTheme().getTextPrimaryColor()));
+        final TextView titleView = (TextView) findViewById(R.id.category_title);
+        final TextView matiereView = (TextView) findViewById(R.id.matiere_title);
+        final TextView niveauView = (TextView) findViewById(R.id.niveau_title);
+        title = (TextView) findViewById(R.id.title_partie);
+        finishButton = (FloatingActionButton) findViewById(R.id.button_finish_epreuve);
+        finishButton.setImageResource(R.drawable.ic_tick);
+        finishButton.setOnClickListener(mOnClickListener);
+        // load data from firebase - classe, niveau, matiere
+        DatabaseReference ref = FirebaseDatabase.getInstance().getReference("classe");
+        ref.child(classeId).addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+               mClasse = dataSnapshot.getValue(Classe.class);
+                titleView.setText(mClasse.getNom());
+                //title.setText(mClasse.getNom());
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
+      // set up matiere
+        DatabaseReference refmatiere = FirebaseDatabase.getInstance().getReference("matiere");
+        refmatiere.child(matiereId).addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                mMatiere = dataSnapshot.getValue(Matiere.class);
+                matiereView.setText(mMatiere.getNom());
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
+        // set niveau data
+        DatabaseReference refniveau = FirebaseDatabase.getInstance().getReference("niveau");
+        refniveau.child(niveauId).addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                niveau = dataSnapshot.getValue(Niveau.class);
+                niveauView.setText( niveau.getNom());
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
         if (mSavedStateIsPlaying) {
             // the toolbar should not have more elevation than the content while playing
             setToolbarElevation(false);

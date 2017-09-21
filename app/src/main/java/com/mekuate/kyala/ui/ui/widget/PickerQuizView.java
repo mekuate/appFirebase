@@ -9,7 +9,8 @@ import android.widget.SeekBar;
 import android.widget.TextView;
 
 import com.mekuate.kyala.R;
-import com.mekuate.kyala.model.entities.Matiere;
+import com.mekuate.kyala.model.entities.Epreuve;
+import com.mekuate.kyala.model.entities.Quize;
 import com.mekuate.kyala.model.entities.quiz.PickerQuiz;
 
 /**
@@ -27,8 +28,8 @@ public final class PickerQuizView extends AbsQuizView<PickerQuiz> {
     private int mMin;
     private int mProgress;
 
-    public PickerQuizView(Context context, Matiere category, PickerQuiz quiz) {
-        super(context, category, quiz);
+    public PickerQuizView(Context context, Epreuve epreuve, PickerQuiz quiz, Quize quize) {
+        super(context, epreuve, quiz, quize);
     }
 
     @Override

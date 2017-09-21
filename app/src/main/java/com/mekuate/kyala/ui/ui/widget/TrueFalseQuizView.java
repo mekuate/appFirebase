@@ -9,7 +9,8 @@ import android.view.ViewGroup;
 import android.widget.LinearLayout;
 
 import com.mekuate.kyala.R;
-import com.mekuate.kyala.model.entities.Matiere;
+import com.mekuate.kyala.model.entities.Epreuve;
+import com.mekuate.kyala.model.entities.Quize;
 import com.mekuate.kyala.model.entities.quiz.TrueFalseQuiz;
 
 /**
@@ -26,12 +27,12 @@ public class TrueFalseQuizView extends AbsQuizView<TrueFalseQuiz> {
         LAYOUT_PARAMS.gravity = Gravity.CENTER;
     }
 
-    private boolean mAnswer;
+    private String mAnswer;
     private View mAnswerTrue;
     private View mAnswerFalse;
 
-    public TrueFalseQuizView(Context context, Matiere matiere, TrueFalseQuiz quiz) {
-        super(context, matiere, quiz);
+    public TrueFalseQuizView(Context context, Epreuve epreuve, TrueFalseQuiz quiz, Quize quize) {
+        super(context, epreuve, quiz, quize);
     }
 
     @Override
@@ -44,10 +45,10 @@ public class TrueFalseQuizView extends AbsQuizView<TrueFalseQuiz> {
             public void onClick(View v) {
                 switch (v.getId()) {
                     case R.id.answer_true:
-                        mAnswer = true;
+                        mAnswer = "Vrai";
                         break;
                     case R.id.answer_false:
-                        mAnswer = false;
+                        mAnswer = "Faux";
                         break;
                 }
                 allowAnswer();
@@ -63,13 +64,14 @@ public class TrueFalseQuizView extends AbsQuizView<TrueFalseQuiz> {
 
     @Override
     protected boolean isAnswerCorrect() {
-        return getQuiz().isAnswerCorrect(mAnswer);
+
+        return  getQuiz().isAnswerCorrect(mAnswer);
     }
 
     @Override
     public Bundle getUserInput() {
         Bundle bundle = new Bundle();
-        bundle.putBoolean(KEY_SELECTION, mAnswer);
+        bundle.putString(KEY_SELECTION, mAnswer);
         return bundle;
     }
 

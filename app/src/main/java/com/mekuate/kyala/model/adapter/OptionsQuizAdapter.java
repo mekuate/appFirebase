@@ -14,7 +14,6 @@ import com.mekuate.kyala.R;
  * Created by Mekuate on 11/07/2017.
  */
 
-
 public class OptionsQuizAdapter extends BaseAdapter {
 
     private final String[] mOptions;

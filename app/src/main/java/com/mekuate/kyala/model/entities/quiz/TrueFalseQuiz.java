@@ -8,17 +8,13 @@ import android.os.Parcel;
  */
 
 @SuppressLint("ParcelCreator")
-public final class TrueFalseQuiz extends Quiz<Boolean> {
+public final class TrueFalseQuiz extends Quiz<String> {
 
-    public TrueFalseQuiz(String question, Boolean answer, boolean solved) {
+    public TrueFalseQuiz(String question, String answer, boolean solved) {
         super(question, answer, solved);
     }
 
-    @SuppressWarnings("unused")
-    public TrueFalseQuiz(Parcel in) {
-        super(in);
-        setAnswer(ParcelableHelper.readBoolean(in));
-    }
+
 
     @Override
     public String getStringAnswer() {
@@ -33,6 +29,6 @@ public final class TrueFalseQuiz extends Quiz<Boolean> {
     @Override
     public void writeToParcel(Parcel dest, int flags) {
         super.writeToParcel(dest, flags);
-        ParcelableHelper.writeBoolean(dest, getAnswer());
+        dest.writeString(getAnswer());
     }
 }
